@@ -18,6 +18,6 @@ public class Home {
     @Enumerated(EnumType.STRING)
     private HomeType type;
 
-    @OneToMany(mappedBy = "gym")
+    @OneToMany(mappedBy = "home")
     private List<Video> video = new ArrayList();
 }
