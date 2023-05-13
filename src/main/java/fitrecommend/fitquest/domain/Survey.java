@@ -1,11 +1,10 @@
 package fitrecommend.fitquest.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
@@ -14,6 +13,9 @@ public class Survey {
     @Id @GeneratedValue
     @Column(name = "survey_id")
     private Long id;
+
+    @OneToOne(mappedBy = "survey", fetch = LAZY)
+    private Member member;
 
     private int career; // 운동 레벨
 

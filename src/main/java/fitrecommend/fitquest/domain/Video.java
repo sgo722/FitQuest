@@ -11,14 +11,8 @@ import static jakarta.persistence.FetchType.LAZY;
 public class Video {
 
     @Id @GeneratedValue
-    @Column(name = "viedo_id")
+    @Column(name = "video_id")
     private Long id;
-
-    private String name;
-
-    private String url;
-
-    private String image;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "home_id")
@@ -27,4 +21,8 @@ public class Video {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
+
+    private String name;
+
+    private String url;
 }

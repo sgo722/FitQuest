@@ -1,5 +1,6 @@
 package fitrecommend.fitquest.domain;
 
+import fitrecommend.fitquest.domain.report.Report;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,12 @@ public class Member {
     @Id @GeneratedValue
     @Column(name = "member_id")
     private Long id;
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "survey_id")
+    private Survey survey;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Report> report = new ArrayList<>();
 
     private String name;
 
@@ -26,10 +33,8 @@ public class Member {
 
     private Long birth;
 
-    private int height;
+    private String token;
 
-    private int weight;
-
-    @OneToMany(mappedBy = "member")
-    private List<Like> like = new ArrayList();
+    @Enumerated(EnumType.STRING) // ORDINAL로 숫자로 인식해서 +N을하여 데이터를 반환해야하나?
+    private Today today;
 }

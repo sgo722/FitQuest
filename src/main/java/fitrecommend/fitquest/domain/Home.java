@@ -18,6 +18,6 @@ public class Home {
     @Enumerated(EnumType.STRING)
     private HomeType type;
 
-    @OneToMany(mappedBy = "home")
+    @OneToMany(mappedBy = "home",  cascade = CascadeType.ALL)
     private List<Video> video = new ArrayList();
 }

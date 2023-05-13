@@ -22,6 +22,10 @@ public class Gym {
 
     private String inforamtion;
 
-    @OneToMany(mappedBy = "gym")
+    private String Image;
+
+    @OneToMany(mappedBy = "gym",  cascade = CascadeType.ALL)
     private List<Video> video = new ArrayList();
+
+    private int kcal;
 }

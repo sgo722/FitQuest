@@ -4,23 +4,19 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
-public class Comment {
+public class Sets {
 
     @Id @GeneratedValue
-    @Column(name = "comment_id")
+    @Column(name = "set_id")
     private Long id;
 
-    private String content;
-
-    private LocalDateTime created;
-
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "exercise_id")
+    private Exercise exercise;
+
+    private int reps;
 }
