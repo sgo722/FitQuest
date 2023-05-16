@@ -14,7 +14,7 @@ public class Video {
     @Column(name = "video_id")
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "home_id")
     private Home home;
 

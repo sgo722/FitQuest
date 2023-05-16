@@ -1,6 +1,5 @@
 package fitrecommend.fitquest.domain;
 
-import fitrecommend.fitquest.domain.report.Report;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,16 +21,16 @@ public class Member {
     private Survey survey;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Report> report = new ArrayList<>();
+    private List<HomeReport> homeReport = new ArrayList<>();
 
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private MemberGender gender;
+    private String gender;
 
     private String email;
 
-    private Long birth;
+    private String birth;
 
     private String token;
 

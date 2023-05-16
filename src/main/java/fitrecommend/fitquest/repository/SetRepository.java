@@ -1,25 +1,27 @@
 package fitrecommend.fitquest.repository;
 
-import fitrecommend.fitquest.domain.Gym;
+import fitrecommend.fitquest.domain.Set;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Member;
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class GymRepository {
-
+public class SetRepository {
     private final EntityManager em;
 
-    public Gym findOne(Long id){
-        return em.find(Gym.class, id);
+    public void save(Set set){
+        em.persist(set);
     }
 
-    public List<Gym> findAll() {
-        return em.createQuery("select g from Gym g", Gym.class)
+    public Set findOne(Long id){
+        return em.find(Set.class, id);
+    }
+
+    public List<Set> findAll(){
+        return em.createQuery("select s from Set s", Set.class)
                 .getResultList();
     }
 }

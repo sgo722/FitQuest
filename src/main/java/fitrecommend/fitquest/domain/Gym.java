@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
 @Getter @Setter
 public class Gym {
@@ -26,6 +28,9 @@ public class Gym {
 
     @OneToMany(mappedBy = "gym",  cascade = CascadeType.ALL)
     private List<Video> video = new ArrayList();
+
+    @OneToOne(mappedBy = "gym", fetch = LAZY)
+    private Exercise exercise;
 
     private int kcal;
 }

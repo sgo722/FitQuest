@@ -8,6 +8,7 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
+@Table(name = "survey")
 public class Survey {
 
     @Id @GeneratedValue
@@ -23,11 +24,11 @@ public class Survey {
 
     private String goal; // 운동 목표 - 운동목표가 유의미한 데이터가 아니기에 String으로 저
 
-    private SurveyPrefer prefer; // 선호 운동
+    private GymType prefer; // 선호 운동
 
     private int frequency; // 운동빈도
 
-    private Long birth; // 생년월일
+    private String birth; // 생년월일
 
     private int height; // 키
 

@@ -1,6 +1,5 @@
 package fitrecommend.fitquest.domain;
 
-import fitrecommend.fitquest.domain.report.Report;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,13 @@ public class Workout {
 
     @OneToOne(mappedBy = "workout", fetch = LAZY)
     @JoinColumn(name = "report_id")
-    private Report report;
+    private HomeReport homeReport;
+
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "home_id")
+    private Home home;
 
     private int satisfaction;
+
+    private String time;
 }

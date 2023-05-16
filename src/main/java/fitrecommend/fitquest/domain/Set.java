@@ -8,7 +8,7 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
-public class Sets {
+public class Set {
 
     @Id @GeneratedValue
     @Column(name = "set_id")
@@ -18,5 +18,5 @@ public class Sets {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
-    private int reps;
+    private int rep;
 }

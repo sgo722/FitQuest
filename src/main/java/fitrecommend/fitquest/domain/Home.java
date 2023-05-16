@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
@@ -18,6 +17,10 @@ public class Home {
     @Enumerated(EnumType.STRING)
     private HomeType type;
 
-    @OneToMany(mappedBy = "home",  cascade = CascadeType.ALL)
-    private List<Video> video = new ArrayList();
+    @OneToOne(mappedBy = "home",  cascade = CascadeType.ALL)
+    private Video video;
+
+    @OneToOne(mappedBy = "home", fetch = LAZY)
+    @JoinColumn(name = "homereport_id")
+    private HomeReport homereport;
 }

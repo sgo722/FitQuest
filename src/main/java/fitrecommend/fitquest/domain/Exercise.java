@@ -1,6 +1,5 @@
 package fitrecommend.fitquest.domain;
 
-import fitrecommend.fitquest.domain.report.Report;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,11 +18,25 @@ public class Exercise {
     private Long id;
 
     @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
-    private List<Sets> sets = new ArrayList<>();
+    private List<Set> sets = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "report_id")
-    private Report report;
+    private HomeReport homeReport;
 
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "gym_id")
+    private Gym gym;
 
+    private int satisfaction;
+
+    private Complete complete;
+
+    public int getTotalKcal(){
+        int kcal = 0;
+        for(Set set : sets){
+            kcal +=  set.getRep() * gym.getKcal();
+        }
+        return kcal;
+    }
 }
