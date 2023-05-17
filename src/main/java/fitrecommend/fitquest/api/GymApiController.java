@@ -1,6 +1,8 @@
 package fitrecommend.fitquest.api;
 
 import fitrecommend.fitquest.domain.Gym;
+import fitrecommend.fitquest.domain.GymType;
+import fitrecommend.fitquest.domain.Progress;
 import fitrecommend.fitquest.repository.GymJPARepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +22,30 @@ public class GymApiController {
     private final GymJPARepository gymJPARepository;
 
     @GetMapping("/gym/all")
-    public ResponseEntity<List<GymDto>> getGym(){
+    public ResponseEntity<List<GymResponseDto>> getGym(){
         List<Gym> gyms = gymJPARepository.findAll();
-        List<GymDto> gymDtos = new ArrayList<>();
+        List<GymResponseDto> gymDtos = new ArrayList<>();
 
         for (Gym gym : gyms) {
-            GymDto gymDTO = new GymDto();
-            gymDTO.setId(gym.getId());
-            gymDTO.setName(gym.getName());
-            gymDtos.add(gymDTO);
+            GymResponseDto gymDto = new GymResponseDto();
+            gymDto.setId(gym.getId());
+            gymDto.setName(gym.getName());
+            gymDto.setGymType(gym.getType());
+            gymDto.setUrl(gym.getUrl());
+
+            gymDtos.add(gymDto);
         }
         return ResponseEntity.ok(gymDtos);
     }
 
+
+
     @Data
-    public class GymDto{
-        private String name;
+    public class GymResponseDto{
         private Long id;
+        private String name;
+        private GymType gymType;
+        private String url;
     }
 
 }

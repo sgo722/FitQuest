@@ -25,7 +25,6 @@ public class Member {
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
     private String gender;
 
     private String email;

@@ -1,7 +1,7 @@
 package fitrecommend.fitquest.service;
 
 import fitrecommend.fitquest.domain.HomeReport;
-import fitrecommend.fitquest.repository.HomeReportRepository;
+import fitrecommend.fitquest.repository.HomeReportJPARepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,19 +13,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportService {
 
-    private final HomeReportRepository homeReportRepository;
+    private final HomeReportJPARepository homeReportJPARepository;
 
     @Transactional
     public void saveReport(HomeReport report){
-        homeReportRepository.save(report);
+        homeReportJPARepository.save(report);
     }
 
 
     public List<HomeReport> findReports() {
-        return homeReportRepository.findAll();
+        return homeReportJPARepository.findAll();
     }
 
-    public HomeReport findOne(Long reportId) {
-        return homeReportRepository.findOne(reportId);
-    }
+//    public HomeReport findOne(Long reportId) {
+//        return homeReportJPARepository.findOne(reportId);
+//    }
 }

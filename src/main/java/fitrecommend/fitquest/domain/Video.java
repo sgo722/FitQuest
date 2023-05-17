@@ -18,10 +18,6 @@ public class Video {
     @JoinColumn(name = "home_id")
     private Home home;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "gym_id")
-    private Gym gym;
-
     private String name;
 
     private String url;

@@ -44,13 +44,12 @@ public class MemberApiController {
             return ResponseEntity.ok(responseDTO);
         }
 
-        @GetMapping("/auth/member") //로그인
-        public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDto) {
-            Long id = loginRequestDto.getId();
-            Member member = memberRepository.findOne(id);
+        @GetMapping("/auth/member/{token}") //로그인(토큰의 고유값으로 조회해서 확인한다)
+        public ResponseEntity<LoginResponseDTO> login(@PathVariable String token) {
+            Member member = memberRepository.findByToken(token);
 
             LoginResponseDTO responseDTO = new LoginResponseDTO();
-            responseDTO.setId(id);
+            responseDTO.setId(member.getId());
 
             if (member != null) {
                 // 이미 저장된 멤버인 경우
@@ -79,8 +78,8 @@ public class MemberApiController {
 
     @Data
     static class LoginResponseDTO { // 로그인 회원에 대한 아이디를 넘겨줄 필요가있나?
-        private Long id;
         private String nextpage;
+        private Long id;
     }
 
     @Data
@@ -92,9 +91,5 @@ public class MemberApiController {
         private String token;
     }
 
-    @Data
-    public class LoginRequestDTO {
-        private Long id;
-    }
 
 }

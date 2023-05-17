@@ -21,6 +21,6 @@ public class Home {
     private Video video;
 
     @OneToOne(mappedBy = "home", fetch = LAZY)
-    @JoinColumn(name = "homereport_id")
+    @JoinColumn(name = "home_report_id")
     private HomeReport homereport;
 }

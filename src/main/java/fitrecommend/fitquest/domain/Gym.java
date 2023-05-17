@@ -24,13 +24,10 @@ public class Gym {
 
     private String inforamtion;
 
-    private String Image;
-
-    @OneToMany(mappedBy = "gym",  cascade = CascadeType.ALL)
-    private List<Video> video = new ArrayList();
-
     @OneToOne(mappedBy = "gym", fetch = LAZY)
     private Exercise exercise;
+
+    private String Url;
 
     private int kcal;
 }

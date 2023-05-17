@@ -21,52 +21,52 @@ public class SurveyApiController {
 
     private final MemberRepository memberRepository;
 
-    @PostMapping("/survey/{memberId}")
-    public ResponseEntity<SurveyCompleteDTO> saveSurvey(@PathVariable Long memberId, @RequestBody SurveyDTO surveyDTO) {
+    @PostMapping("/survey/save/{memberId}") // 설문완료(분석중 화면에서)
+    public ResponseEntity<SurveyResponseDTO> saveSurvey(@PathVariable Long memberId, @RequestBody SurveyRequestDTO surveyRequestDTO) {
         // memberId를 사용하여 해당 회원을 조회
         Member member = memberRepository.findOne(memberId);
-        SurveyCompleteDTO surveyCompleteDTO = new SurveyCompleteDTO();
+        SurveyResponseDTO surveyResponseDTO = new SurveyResponseDTO();
 
         if (member == null) {
             // 회원이 존재하지 않는 경우 예외 처리
-            return ResponseEntity.badRequest().body(surveyCompleteDTO);
+            return ResponseEntity.badRequest().body(surveyResponseDTO);
         }
 
-        // SurveyDTO에서 필요한 정보를 가져와서 Survey 엔티티에 설정
+        // SurveyResponseDTO에서 필요한 정보를 가져와서 Survey 엔티티에 설정
         Survey survey = new Survey();
         survey.setMember(member);
-        survey.setCareer(surveyDTO.getCareer());
-        survey.setLocation(surveyDTO.getLocation());
-        survey.setGoal(surveyDTO.getGoal());
-        survey.setPrefer(surveyDTO.getPrefer());
-        survey.setFrequency(surveyDTO.getFrequency());
-        survey.setBirth(surveyDTO.getBirth());
-        survey.setHeight(surveyDTO.getHeight());
-        survey.setWeight(surveyDTO.getWeight());
+        survey.setCareer(surveyRequestDTO.getCareer());
+        survey.setLocation(surveyRequestDTO.getLocation());
+        survey.setGoal(surveyRequestDTO.getGoal());
+        survey.setPrefer(surveyRequestDTO.getPrefer());
+        survey.setFrequency(surveyRequestDTO.getFrequency());
+        survey.setBirth(surveyRequestDTO.getBirth());
+        survey.setHeight(surveyRequestDTO.getHeight());
+        survey.setWeight(surveyRequestDTO.getWeight());
 
         // Survey 저장
         surveyJPARepository.save(survey);
-        surveyCompleteDTO.setId(survey.getMember().getId());
+        surveyResponseDTO.setId(survey.getMember().getId());
 
         if(survey.getLocation() == SurveyLocation.valueOf("GYM")) {
-            surveyCompleteDTO.setNextpage("gym");
+            surveyResponseDTO.setNextpage("gym");
         }else{
-            surveyCompleteDTO.setNextpage("home");
+            surveyResponseDTO.setNextpage("home");
         }
-        return ResponseEntity.ok(surveyCompleteDTO);
+        return ResponseEntity.ok(surveyResponseDTO);
     }
 
-    @GetMapping("/survey/{memberId}")
-    public ResponseEntity<SurveyDTO> getSurvey(@PathVariable Long memberId) {
+    @GetMapping("/survey/{memberId}") //설문전체를 조회할수있다.
+    public ResponseEntity<SurveyRequestDTO> getSurvey(@PathVariable Long memberId) {
         Member member = memberRepository.findOne(memberId);
 
         Survey survey = surveyJPARepository.findByMember(member);
 
-        return ResponseEntity.ok(new SurveyDTO(survey));
+        return ResponseEntity.ok(new SurveyRequestDTO(survey));
     }
 
     @Data
-    public class SurveyDTO {
+    public class SurveyRequestDTO {
 
 
         private int career;
@@ -78,7 +78,7 @@ public class SurveyApiController {
         private int height;
         private int weight;
 
-        public SurveyDTO(Survey survey) {
+        public SurveyRequestDTO(Survey survey) {
             this.career = survey.getCareer();
             this.location = survey.getLocation();
             this.goal = survey.getGoal();
@@ -91,7 +91,7 @@ public class SurveyApiController {
     }
 
     @Data
-    static class SurveyCompleteDTO {
+    static class SurveyResponseDTO {
 
         private String nextpage;
         private Long id; // 회원 아이디

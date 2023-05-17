@@ -10,11 +10,12 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
+@Table(name = "homereport")
 public class HomeReport {
 
     @Id
     @GeneratedValue
-    @Column(name = "report_id")
+    @Column(name = "homereport_id")
     private Long id;
 
 
@@ -34,4 +35,6 @@ public class HomeReport {
     private LocalDateTime created;
 
     private LocalDateTime starttime;
+
+    private LocalDateTime endtime;
 }

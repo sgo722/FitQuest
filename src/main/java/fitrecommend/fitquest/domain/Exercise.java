@@ -21,8 +21,8 @@ public class Exercise {
     private List<Set> sets = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "report_id")
-    private HomeReport homeReport;
+    @JoinColumn(name = "gymreport_id")
+    private GymReport gymreport;
 
     @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "gym_id")
