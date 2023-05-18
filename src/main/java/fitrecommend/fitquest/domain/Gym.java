@@ -29,5 +29,5 @@ public class Gym {
 
     private String Url;
 
-    private int kcal;
+    private Integer kcal;
 }

@@ -38,7 +38,7 @@ public class MemberApiController {
             Long memberId = memberService.join(member);
 
             JoinResponseDTO responseDTO = new JoinResponseDTO();
-            responseDTO.setNextpage("survey");
+            responseDTO.setNextPage("survey");
             responseDTO.setId(memberId);
 
             return ResponseEntity.ok(responseDTO);
@@ -48,37 +48,37 @@ public class MemberApiController {
         public ResponseEntity<LoginResponseDTO> login(@PathVariable String token) {
             Member member = memberRepository.findByToken(token);
 
-            LoginResponseDTO responseDTO = new LoginResponseDTO();
-            responseDTO.setId(member.getId());
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+            loginResponseDTO.setId(member.getId());
 
             if (member != null) {
                 // 이미 저장된 멤버인 경우
                 if (member.getSurvey() != null) {
                     if(member.getSurvey().getLocation() == SurveyLocation.GYM) { // 설문조사에서 헬스장으로 답한경우
-                        responseDTO.setNextpage("gym");
+                        loginResponseDTO.setNextPage("gym");
                     }
                     else{ // 설문조사에서 홈트로 답한경우
-                        responseDTO.setNextpage("home");
+                        loginResponseDTO.setNextPage("home");
                     }
                 } else { // 회원이지만 설문조사를 하지 않은 경우
-                    responseDTO.setNextpage("survey");
+                    loginResponseDTO.setNextPage("survey");
                 }
             } else { // 신규 멤버인 경우
-                responseDTO.setNextpage("join");
+                loginResponseDTO.setNextPage("join");
             }
-            return ResponseEntity.ok(responseDTO);
+            return ResponseEntity.ok(loginResponseDTO);
         }
 
     @Data
     static class JoinResponseDTO {
 
-        private String nextpage;
+        private String nextPage;
         private Long id;
     }
 
     @Data
     static class LoginResponseDTO { // 로그인 회원에 대한 아이디를 넘겨줄 필요가있나?
-        private String nextpage;
+        private String nextPage;
         private Long id;
     }
 

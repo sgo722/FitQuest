@@ -27,7 +27,7 @@ public class HomeReport {
     @JoinColumn(name = "home_id")
     private Home home;
 
-    private int calorie;
+    private Integer calorie;
 
     @Enumerated(EnumType.STRING)
     private Progress progress;

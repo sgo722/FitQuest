@@ -18,7 +18,7 @@ public class Survey {
     @OneToOne(mappedBy = "survey", fetch = LAZY)
     private Member member;
 
-    private int career; // 운동 레벨
+    private Integer career; // 운동 레벨
 
     private SurveyLocation location; // 운동 장소
 
@@ -26,11 +26,11 @@ public class Survey {
 
     private GymType prefer; // 선호 운동
 
-    private int frequency; // 운동빈도
+    private Integer frequency; // 운동빈도
 
     private String birth; // 생년월일
 
-    private int height; // 키
+    private Integer height; // 키
 
-    private int weight; // 몸무게
+    private Integer  weight; // 몸무게
 }

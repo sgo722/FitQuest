@@ -27,7 +27,7 @@ public class GymReport {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private int calorie;
+    private Integer reportKcal;
 
     @Enumerated(EnumType.STRING)
     private Progress progress;

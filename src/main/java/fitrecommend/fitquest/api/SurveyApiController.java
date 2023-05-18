@@ -56,27 +56,27 @@ public class SurveyApiController {
         return ResponseEntity.ok(surveyResponseDTO);
     }
 
-    @GetMapping("/survey/{memberId}") //설문전체를 조회할수있다.
-    public ResponseEntity<SurveyRequestDTO> getSurvey(@PathVariable Long memberId) {
-        Member member = memberRepository.findOne(memberId);
-
-        Survey survey = surveyJPARepository.findByMember(member);
-
-        return ResponseEntity.ok(new SurveyRequestDTO(survey));
-    }
+//    @GetMapping("/survey/{memberId}") //설문전체를 조회할수있다.
+//    public ResponseEntity<SurveyRequestDTO> getSurvey(@PathVariable Long memberId) {
+//        Member member = memberRepository.findOne(memberId);
+//
+//        Survey survey = surveyJPARepository.findByMember(member);
+//
+//        return ResponseEntity.ok(new SurveyRequestDTO(survey));
+//    }
 
     @Data
     public class SurveyRequestDTO {
 
 
-        private int career;
+        private Integer career;
         private SurveyLocation location;
         private String goal;
         private GymType prefer;
-        private int frequency;
+        private Integer frequency;
         private String birth;
-        private int height;
-        private int weight;
+        private Integer height;
+        private Integer weight;
 
         public SurveyRequestDTO(Survey survey) {
             this.career = survey.getCareer();

@@ -28,9 +28,11 @@ public class Exercise {
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
-    private int satisfaction;
+    private Integer satisfaction;
 
     private Complete complete;
+
+    private Integer totalKcal;
 
     public int getTotalKcal(){
         int kcal = 0;

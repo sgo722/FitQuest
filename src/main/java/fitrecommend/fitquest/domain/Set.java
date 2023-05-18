@@ -18,5 +18,5 @@ public class Set {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
-    private int rep;
+    private Integer rep;
 }
