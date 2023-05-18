@@ -143,6 +143,7 @@ public class GymReportApiController {
             gymReport.getExercises().add(exercise);
         }
         gymReport.setProgress(Progress.INPROGRESS);
+        gymReportJPARepository.save(gymReport);
         gymSaveResponseDto.setState("Success");
         return ResponseEntity.ok(gymSaveResponseDto);
     }
@@ -179,6 +180,8 @@ public class GymReportApiController {
         gymReport.setEndtime(gymReportCompleteRequestDto.endTime);
         gymReport.setReportKcal(gymReport.getReportKcal());
         gymReportCompleteResponseDto.totalGymKcal = gymReport.getReportKcal();
+        gymReport.setProgress(Progress.COMPLETE);
+        gymReportJPARepository.save(gymReport);
         return ResponseEntity.ok(gymReportCompleteResponseDto);
     }
 
