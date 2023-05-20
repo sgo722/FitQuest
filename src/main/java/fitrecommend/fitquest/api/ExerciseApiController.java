@@ -26,14 +26,15 @@ public class ExerciseApiController {
 
     private final GymJPARepository gymJPARepository;
 
+
     @PostMapping("/gym/exercise/complete")
     public ResponseEntity<ExerciseCompleteResponseDto> exerciseComplete(ExerciseCompleteRequestDto exerciseCompleteRequestDto){
         ExerciseCompleteResponseDto exerciseCompleteResponseDto = new ExerciseCompleteResponseDto();
         Member member = memberRepository.findOne(exerciseCompleteRequestDto.memberId);
         List<GymReport> gymAllReports = gymReportJPARepository.findByMember(member); // 회원이 가지고있는 모든 보고서를 조회한다.
         GymReport gymReport = gymAllReports.get(gymAllReports.size()-1);
-        Gym gym = gymJPARepository.findOne(exerciseCompleteRequestDto.gymId);
-        Exercise exercise = exerciseJPARepository.findByGymReportAndGym(gymReport, gym);
+        Exercise exercise = exerciseJPARepository.findByGymReportAndGymId(gymReport, exerciseCompleteRequestDto.gymId);
+
         for(Integer lep : exerciseCompleteRequestDto.getLeps()){
             Set set = new Set();
             set.setExercise(exercise);
@@ -54,8 +55,7 @@ public class ExerciseApiController {
         List<GymReport> gymAllReports = gymReportJPARepository.findByMember(member); // 회원이 가지고있는 모든 보고서를 조회한다.
         GymReport gymReport = gymAllReports.get(gymAllReports.size()-1);
         for(SatisfactionDto satisfactionDto: gymReportSatisfactionRequest.getSatisfactionDtos()){
-            Gym gym = gymJPARepository.findOne(satisfactionDto.gymId);
-            Exercise exercise = exerciseJPARepository.findByGymReportAndGym(gymReport,gym);
+            Exercise exercise = exerciseJPARepository.findByGymReportAndGymId(gymReport, satisfactionDto.gymId);
             exercise.setSatisfaction(satisfactionDto.satisfaction);
             exerciseJPARepository.save(exercise);
         }

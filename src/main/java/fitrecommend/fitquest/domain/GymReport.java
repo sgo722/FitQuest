@@ -12,15 +12,15 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
-@Table(name = "gymreport")
+//@Table(name = "gymreport")
 public class GymReport {
 
     @Id
     @GeneratedValue
-    @Column(name = "gymreport_id")
+    @Column(name = "gymReport_id")
     private Long id;
 
-    @OneToMany(mappedBy = "gymreport",  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "gymReport",  cascade = CascadeType.ALL)
     private List<Exercise> exercises = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)

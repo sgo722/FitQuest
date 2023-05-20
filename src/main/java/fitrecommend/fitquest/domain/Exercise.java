@@ -22,7 +22,7 @@ public class Exercise {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "gymreport_id")
-    private GymReport gymreport;
+    private GymReport gymReport;
 
     @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "gym_id")

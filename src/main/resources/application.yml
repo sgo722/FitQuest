@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/FitQuest
-    username: root
-    password: gjwns0418!
+    url: jdbc:mysql://13.209.245.18:3306/FitQuest
+    username: sgo722
+    password: zoqtmxhs1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

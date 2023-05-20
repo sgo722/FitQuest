@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -125,22 +126,25 @@ public class GymReportApiController {
         List<GymReport> gymAllReports = gymReportJPARepository.findByMember(member);
         GymReport gymReport = gymAllReports.get(gymAllReports.size()-1);
         for (Exercise exercise : gymReport.getExercises()) {
-            exercise.setGymreport(null); // 연결된 GymReport를 끊어줍니다.
+            exercise.setGymReport(null); // 연결된 GymReport를 끊어줍니다.
             exerciseJPARepository.delete(exercise); // Exercise 객체를 삭제합니다.
         }
         gymReport.getExercises().clear(); // 마지막으로 조회한 운동보고서에 AI로부터 저장한 운동내역을 다 삭제해버림.
         GymSaveResponseDto gymSaveResponseDto = new GymSaveResponseDto();
         gymReport.setStarttime(gymSaveRequestDto.startTime);
         gymReport.setMember(member);
-        for(Long gymId : gymSaveRequestDto.getGymId()){
-            Gym gym = gymJPARepository.findOne(gymId);
-            Exercise exercise = new Exercise();
-            exercise.setGym(gym);
-            exercise.setGymreport(gymReport);
-            exercise.setComplete(Complete.NO);
-            exercise.setTotalKcal(0);
-            exerciseJPARepository.save(exercise);
-            gymReport.getExercises().add(exercise);
+        for(Long id : gymSaveRequestDto.getGymId()){
+            Optional<Gym> gymOptional = gymJPARepository.findById(id);
+            if(gymOptional.isPresent()) {
+                Gym gym = gymOptional.get();
+                Exercise exercise = new Exercise();
+                exercise.setGym(gym);
+                exercise.setGymReport(gymReport);
+                exercise.setComplete(Complete.NO);
+                exercise.setTotalKcal(0);
+                exerciseJPARepository.save(exercise);
+                gymReport.getExercises().add(exercise);
+            }
         }
         gymReport.setProgress(Progress.INPROGRESS);
         gymReportJPARepository.save(gymReport);

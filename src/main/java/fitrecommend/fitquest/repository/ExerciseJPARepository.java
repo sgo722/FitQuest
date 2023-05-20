@@ -6,7 +6,13 @@ import fitrecommend.fitquest.domain.GymReport;
 import fitrecommend.fitquest.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ExerciseJPARepository extends JpaRepository<Exercise, Long> {
 
-    public Exercise findByGymReportAndGym(GymReport gymReport, Gym gym);
+    Exercise findByGymReportAndGymId(GymReport gymReport, Long gymId);
+
+
+
+
 }
