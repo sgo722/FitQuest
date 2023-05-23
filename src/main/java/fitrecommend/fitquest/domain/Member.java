@@ -21,7 +21,10 @@ public class Member {
     private Survey survey;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<HomeReport> homeReport = new ArrayList<>();
+    private List<HomeReport> homeReports = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<GymReport> gymReports = new ArrayList<>();
 
     private String name;
 

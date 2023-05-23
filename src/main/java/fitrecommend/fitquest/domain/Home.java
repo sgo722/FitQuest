@@ -20,4 +20,8 @@ public class Home {
     @OneToOne(mappedBy = "home", fetch = LAZY)
     @JoinColumn(name = "homeReport_id")
     private HomeReport homereport;
+
+    private String url;
+
+    private String videoName;
 }

@@ -1,11 +1,17 @@
 package fitrecommend.fitquest.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fitrecommend.fitquest.domain.*;
 import fitrecommend.fitquest.repository.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,6 +24,8 @@ public class HomeReportApiController {
 
     private final HomeReportJPARepository homeReportJPARepository;
     private final MemberRepository memberRepository;
+
+    private final HomeJPARepository homeJPARepository;
 
 
 
@@ -62,6 +70,48 @@ public class HomeReportApiController {
     // INPROGRESS, report - 운동 중 페이지 이동, 운동보고서 api호출
     // READY, report - 운동 전 페이지 이동, 운동보고서 api호출
     // NULL, recommend - 운동 전 페이지 이동, 운동 추천 api호출
+
+    @GetMapping("/home/recommend/{memberId}")
+    public ResponseEntity<HomeRecommendResponseDto> homeRecommend(@PathVariable Long memberId)throws JsonProcessingException {
+        HomeRecommendResponseDto homeRecommendResponseDto = new HomeRecommendResponseDto();
+        Member member = memberRepository.findOne(memberId);
+
+        FlaskRecommendRequestDto requestDto = new FlaskRecommendRequestDto();
+        requestDto.setMemberId(memberId);
+        requestDto.setPrefer1(member.getSurvey().getPrefer1());
+        requestDto.setPrefer2(member.getSurvey().getPrefer2());
+
+        // JSON 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonData = objectMapper.writeValueAsString(requestDto);
+
+        // HTTP 요청 보내기
+        String url = "http://<플라스크 API URL>/api/v1/ai/home/recommend";  // 플라스크 API의 엔드포인트 URL
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonData, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<FlaskRecommendResponseDto> responseEntity = restTemplate.postForEntity(url, requestEntity, FlaskRecommendResponseDto.class);
+
+        HomeReport homeReport = new HomeReport();
+        homeReport.setMember(member);
+        member.getHomeReports().add(homeReport);
+        memberRepository.save(member);
+        Home home = new Home();
+        home.setHomereport(homeReport);
+        home.setType(responseEntity.getBody().getType());
+        home.setVideoName(responseEntity.getBody().videoName);
+        home.setUrl(responseEntity.getBody().getUrl());
+        homeReport.setHome(home);
+        homeReportJPARepository.save(homeReport);
+        homeJPARepository.save(home);
+        homeRecommendResponseDto.setType(home.getType());
+        homeRecommendResponseDto.setVideoName(home.getVideoName());
+        homeRecommendResponseDto.setUrl(home.getUrl());
+        return ResponseEntity.ok(homeRecommendResponseDto);
+
+    }
 
     @PostMapping("/home/report/save") // 현재 데이터베이스 있는 그대로 시간만 추가하면된다.
     public ResponseEntity<HomeReportSaveResponse> homeReportSave(HomeReportSaveRequest homeReportSaveRequest){
@@ -114,6 +164,28 @@ public class HomeReportApiController {
     }
 
     @Data
+    public static class HomeRecommendResponseDto{
+        private HomeType type;
+        private String videoName;
+        private String url;
+    }
+
+    @Data
+    public static class FlaskRecommendRequestDto{
+        private Long memberId;
+        private HomeType prefer1;
+        private HomeType prefer2;
+    }
+
+
+    @Data
+    public static class FlaskRecommendResponseDto{
+        private HomeType type;
+        private String url;
+        private String videoName;
+    }
+
+    @Data
     public static class HomeReportSaveRequest{
         private Long memberId;
         private LocalDateTime startTime;
@@ -162,5 +234,14 @@ public class HomeReportApiController {
         public HomeReportSatisfactionResponse(){
         }
     }
+
+    //
+
+    @Data
+    public static class HomeRecommendResponseDtos{
+        private List<HomeRecommendResponseDto> homeRecommendResponseDtos;
+    }
+
+
 
 }

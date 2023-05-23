@@ -134,7 +134,7 @@ public class GymReportApiController {
         String jsonData = objectMapper.writeValueAsString(requestDto);
 
         // HTTP 요청 보내기
-        String url = "http://<플라스크 API URL>/process_data";  // 플라스크 API의 엔드포인트 URL
+        String url = "http://<플라스크 API URL>/api/v1/ai/gym/recommend";  // 플라스크 API의 엔드포인트 URL
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> requestEntity = new HttpEntity<>(jsonData, headers);
@@ -155,6 +155,7 @@ public class GymReportApiController {
         GymReport gymreport = new GymReport();
         GymRecommendResponseDto gymRecommendResponseDto = new GymRecommendResponseDto();
         gymreport.setMember(member);
+        member.getGymReports().add(gymreport);
         for(Long gymId : responseEntity.getBody().getGymId()){ // AI로부터 운동을 받아와서 저장한다.
             Gym gym = gymJPARepository.findOne(memberId);
             Exercise exercise = new Exercise();
@@ -169,13 +170,8 @@ public class GymReportApiController {
             exerciseJPARepository.save(exercise);
         }
         gymReportJPARepository.save(gymReport);
-        if(member.getToday() == Today.CHEST){
-            member.setToday(Today.BACK);
-        }else if(member.getToday() == Today.BACK){
-            member.setToday(Today.LEG);
-        }else{
-            member.setToday(Today.CHEST);
-        }
+        memberRepository.save(member);
+
         return ResponseEntity.ok(gymRecommendResponseDto);
     }
 
@@ -244,6 +240,17 @@ public class GymReportApiController {
         gymReport.setReportKcal(gymReport.getReportKcal());
         gymReportCompleteResponseDto.totalGymKcal = gymReport.getReportKcal();
         gymReport.setProgress(Progress.COMPLETE);
+        if(member.getToday() == Today.CHEST){
+            gymReport.setToday(Today.CHEST);
+            member.setToday(Today.BACK);
+        }else if(member.getToday() == Today.BACK){
+            gymReport.setToday(Today.BACK);
+            member.setToday(Today.LEG);
+        }else{
+            gymReport.setToday(Today.LEG);
+            member.setToday(Today.CHEST);
+        }
+        memberRepository.save(member);
         gymReportJPARepository.save(gymReport);
         return ResponseEntity.ok(gymReportCompleteResponseDto);
     }
