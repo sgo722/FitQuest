@@ -161,11 +161,14 @@ public class GymReportApiController {
             exercise.setGym(gym);
             exercise.setGymReport(gymreport);
             exercise.setComplete(Complete.NO);
-            exercise.setTotalKcal(0L);
+            exercise.setTotalKcal(0D);
+            gymReport.getExercises().add(exercise);
             gymRecommendResponseDto.setGymId(gymId);
             gymRecommendResponseDto.setName(gym.getName());
             gymRecommendResponseDto.setType(gym.getType());
+            exerciseJPARepository.save(exercise);
         }
+        gymReportJPARepository.save(gymReport);
         if(member.getToday() == Today.CHEST){
             member.setToday(Today.BACK);
         }else if(member.getToday() == Today.BACK){
@@ -197,7 +200,7 @@ public class GymReportApiController {
                 exercise.setGym(gym);
                 exercise.setGymReport(gymReport);
                 exercise.setComplete(Complete.NO);
-                exercise.setTotalKcal(0L);
+                exercise.setTotalKcal(0D);
                 exerciseJPARepository.save(exercise);
                 gymReport.getExercises().add(exercise);
             }
@@ -335,7 +338,7 @@ public class GymReportApiController {
     @Data
     public static class GymKcalDto{
         private Long gymId;
-        private Long gymTotalKcal;
+        private Double gymTotalKcal;
         public GymKcalDto(){
 
         }

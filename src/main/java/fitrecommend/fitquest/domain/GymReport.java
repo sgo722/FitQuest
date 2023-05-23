@@ -42,8 +42,8 @@ public class GymReport {
     private Today today;
 
 
-    public Long getTotalKcal(){
-        Long kcal = 0L;
+    public Double getTotalKcal(){
+        Double kcal = 0D;
         for(Exercise exercise : exercises){
             kcal += exercise.getTotalKcal();
         }

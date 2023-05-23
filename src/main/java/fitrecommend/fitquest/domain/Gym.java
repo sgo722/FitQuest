@@ -29,5 +29,5 @@ public class Gym {
 
     private String Url;
 
-    private Long kcal;
+    private Double kcal;
 }
