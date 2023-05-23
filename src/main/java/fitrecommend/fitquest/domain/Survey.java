@@ -22,9 +22,13 @@ public class Survey {
 
     private SurveyLocation location; // 운동 장소
 
-    private String goal; // 운동 목표 - 운동목표가 유의미한 데이터가 아니기에 String으로 저
+    private GymType goal1; // 운동 목표 - 운동목표가 유의미한 데이터가 아니기에 String으로 저
 
-    private GymType prefer; // 선호 운동
+    private GymType goal2;
+
+    private HomeType prefer1; // 선호 운동 1
+
+    private HomeType prefer2; // 선호 운동 2
 
     private Integer frequency; // 운동빈도
 

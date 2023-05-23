@@ -1,11 +1,17 @@
 package fitrecommend.fitquest.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fitrecommend.fitquest.domain.*;
 import fitrecommend.fitquest.repository.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -20,6 +26,8 @@ public class GymReportApiController {
 
     private final GymJPARepository gymJPARepository;
     private final MemberRepository memberRepository;
+
+    private final GymReportRepository gymReportRepository;
 
     private final ExerciseJPARepository exerciseJPARepository;
 
@@ -98,27 +106,75 @@ public class GymReportApiController {
 //
 //    }
 
+    /**
+     * AI와 통신해야함
+     * */
 
-    // AI와 통신해야할 내용이 있어서 보류하자
-//    @GetMapping("/gym/report/recommend/{memberId}") // AI와 통신해야할 내용이 있어서 보류하자
-//    public ResponseEntity<GymRecommendResponseDto> GymReportRecommend(@PathVariable Long memberId, GymRecommendRequestDto gymRecommendRequestDto){
-//        Member member = memberRepository.findOne(memberId);
-//        GymReport gymreport = new GymReport();
-//        GymRecommendResponseDto gymRecommendResponseDto = new GymRecommendResponseDto();
-//        gymreport.setMember(member);
-//        for(Long gymId : gymRecommendRequestDto.){ // 운동을 받아와서 저장한다.
-//            Gym gym = gymJPARepository.findOne(gymId);
-//            Exercise exercise = new Exercise();
-//            exercise.setGym(gym);
-//            exercise.setGymreport(gymreport);
-//            exercise.setComplete(Complete.NO);
-//            exercise.setTotalkcal(0);
-//            gymCreateResponseDto.setId(gymId);
-//            gymCreateResponseDto.setName(gym.getName());
-//            gymCreateResponseDto.setType(gym.getType());
+    @GetMapping("/gym/report/recommend/{memberId}")
+    public ResponseEntity<GymRecommendResponseDto> GymReportRecommend(@PathVariable Long memberId) throws JsonProcessingException {
+
+        Member member = memberRepository.findOne(memberId);
+        List<GymReport> gymReports = gymReportRepository.findByToday(member.getToday());
+        GymReport gymReport = gymReports.get(gymReports.size()-1);
+        FlaskRecommendRequestDto requestDto = new FlaskRecommendRequestDto();
+        requestDto.setMemberId(memberId);
+        requestDto.setToday(member.getToday());
+        requestDto.setGoal1(member.getSurvey().getGoal1());
+        requestDto.setGoal2(member.getSurvey().getGoal2());
+        for(Exercise exercise : gymReport.getExercises()) {
+            RecentExerciseDto recentExerciseDto = new RecentExerciseDto();
+            recentExerciseDto.setExerciseId(exercise.getId());
+            recentExerciseDto.setSatisfaction(exercise.getSatisfaction());
+            requestDto.getRecentExerciseDtos().add(recentExerciseDto);
+        }
+
+
+        // JSON 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonData = objectMapper.writeValueAsString(requestDto);
+
+        // HTTP 요청 보내기
+        String url = "http://<플라스크 API URL>/process_data";  // 플라스크 API의 엔드포인트 URL
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonData, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<FlaskRecommendResponseDto> responseEntity = restTemplate.postForEntity(url, requestEntity, FlaskRecommendResponseDto.class);
+
+
+        // 필요한 처리가 딱히 있는지 모르겠다. 일단 잘 전달되고 전달받는다는 생각으로 로직을 구성한다.
+//        // 응답 처리
+//        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+//            String response = responseEntity.getBody();
+//            // 플라스크에서 반환한 응답 처리
+//        } else {
+//            // 에러 처리
 //        }
-//        return ResponseEntity.ok(GymSaveResponseDto);
-//    }
+
+        GymReport gymreport = new GymReport();
+        GymRecommendResponseDto gymRecommendResponseDto = new GymRecommendResponseDto();
+        gymreport.setMember(member);
+        for(Long gymId : responseEntity.getBody().getGymId()){ // AI로부터 운동을 받아와서 저장한다.
+            Gym gym = gymJPARepository.findOne(memberId);
+            Exercise exercise = new Exercise();
+            exercise.setGym(gym);
+            exercise.setGymReport(gymreport);
+            exercise.setComplete(Complete.NO);
+            exercise.setTotalKcal(0L);
+            gymRecommendResponseDto.setGymId(gymId);
+            gymRecommendResponseDto.setName(gym.getName());
+            gymRecommendResponseDto.setType(gym.getType());
+        }
+        if(member.getToday() == Today.CHEST){
+            member.setToday(Today.BACK);
+        }else if(member.getToday() == Today.BACK){
+            member.setToday(Today.LEG);
+        }else{
+            member.setToday(Today.CHEST);
+        }
+        return ResponseEntity.ok(gymRecommendResponseDto);
+    }
 
     @PostMapping("/gym/report/save")
     public ResponseEntity<GymSaveResponseDto> gymReportSave(GymSaveRequestDto gymSaveRequestDto){
@@ -141,7 +197,7 @@ public class GymReportApiController {
                 exercise.setGym(gym);
                 exercise.setGymReport(gymReport);
                 exercise.setComplete(Complete.NO);
-                exercise.setTotalKcal(0);
+                exercise.setTotalKcal(0L);
                 exerciseJPARepository.save(exercise);
                 gymReport.getExercises().add(exercise);
             }
@@ -190,7 +246,7 @@ public class GymReportApiController {
     }
 
     @Data
-    public class GymProgressResponseDto{
+    public static class GymProgressResponseDto{
         private Progress progress;
         private String nextApi;
     }
@@ -198,32 +254,53 @@ public class GymReportApiController {
 
 
     @Data
-    public class GymSaveRequestDto{ // 운동을 저장하고 어떤값을 반환해줘야할까?
+    public static class GymSaveRequestDto{ // 운동을 저장하고 어떤값을 반환해줘야할까?
         private Long memberId;
         private List<Long> gymId; // 운동 id값을 리스트로 받는다.
         private LocalDateTime startTime;
     }
     @Data
-    public class GymSaveResponseDto{ // 운동을 저장하고 어떤값을 반환해줘야할까?
+    public static class GymSaveResponseDto{ // 운동을 저장하고 어떤값을 반환해줘야할까?
         private String state;
     }
 
-    @Data
-    public class GymRecommendRequestDto{
-        private Long memberId;
 
+    @Data
+    public static class GymRecommendResponseDtos{
+        private List<GymRecommendResponseDto> gymRecommendResponseDtos;
     }
 
     @Data
-    public class GymRecommendResponseDto{
-        private Long id;
+    public static class GymRecommendResponseDto{
+        private Long gymId;
         private GymType type;
         private String name;
     }
 
+    @Data
+    public static class FlaskRecommendRequestDto{
+        private Long memberId;
+        private Today today;
+        private GymType goal1;
+        private GymType goal2;
+        private List<RecentExerciseDto> RecentExerciseDtos;
+
+    }
 
     @Data
-    public class GymReportResponseDto{
+    public static class RecentExerciseDto{
+        private Long exerciseId;
+        private Integer satisfaction;
+    }
+
+    @Data
+    public static class FlaskRecommendResponseDto{
+        private List<Long> GymId;
+    }
+
+
+    @Data
+    public static class GymReportResponseDto{
         private Long gymId;
         private String gymType;
         private String gymInformation;
@@ -232,27 +309,36 @@ public class GymReportApiController {
     }
 
     @Data
-    public class GymReportResponseDtos {
+    public static class GymReportResponseDtos {
         private List<GymReportResponseDto> gyms;
     }
 
 
     @Data
-    public class GymReportCompleteRequestDto{
+    public static class GymReportCompleteRequestDto{
         private Long memberId;
         private LocalDateTime endTime;
+
+        public GymReportCompleteRequestDto(){
+
+        }
     }
     @Data
-    public class GymReportCompleteResponseDto{
-        private Integer totalGymKcal;
+    public static class GymReportCompleteResponseDto{
+        private Long totalGymKcal;
         private List<GymKcalDto> gymKcalDtos;
+        public GymReportCompleteResponseDto(){
+        }
 
     }
 
     @Data
-    public class GymKcalDto{
+    public static class GymKcalDto{
         private Long gymId;
-        private Integer gymTotalKcal;
+        private Long gymTotalKcal;
+        public GymKcalDto(){
+
+        }
     }
 
 }

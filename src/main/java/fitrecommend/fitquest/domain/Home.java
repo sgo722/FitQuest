@@ -17,10 +17,7 @@ public class Home {
     @Enumerated(EnumType.STRING)
     private HomeType type;
 
-    @OneToOne(mappedBy = "home",  cascade = CascadeType.ALL)
-    private Video video;
-
     @OneToOne(mappedBy = "home", fetch = LAZY)
-    @JoinColumn(name = "home_report_id")
+    @JoinColumn(name = "homeReport_id")
     private HomeReport homereport;
 }

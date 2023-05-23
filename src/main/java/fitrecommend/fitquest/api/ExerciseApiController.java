@@ -64,35 +64,47 @@ public class ExerciseApiController {
     }
 
     @Data
-    public class ExerciseCompleteRequestDto{
+    public static class ExerciseCompleteRequestDto{
         private Long memberId;
         private Long gymId;
         private List<Integer> leps;
+
+        public ExerciseCompleteRequestDto(){
+
+        }
     }
 
     @Data
-    public class ExerciseCompleteResponseDto{
+    public static class ExerciseCompleteResponseDto{
         private String state;
+        public ExerciseCompleteResponseDto(){
+        }
     }
 
     @Data
-    public class GymReportSatisfactionRequest{
+    public static class GymReportSatisfactionRequest{
         private Long memberId;
         private List<SatisfactionDto> satisfactionDtos;
+        public GymReportSatisfactionRequest(){
+
+        }
     }
 
+
     @Data
-    public class SatisfactionDto{
+    public static class SatisfactionDto{
         private Long gymId;
         private Integer satisfaction;
+        public SatisfactionDto(){
+        }
     }
 
 
 
     @Data
-    public class GymReportSatisfactionResponse{
+    public static class GymReportSatisfactionResponse{
         private String state;
+        public GymReportSatisfactionResponse(){
+        }
     }
-
-
 }

@@ -32,10 +32,10 @@ public class Exercise {
 
     private Complete complete;
 
-    private Integer totalKcal;
+    private Long totalKcal;
 
-    public int getTotalKcal(){
-        int kcal = 0;
+    public Long getTotalKcal(){
+        Long kcal = 0L;
         for(Set set : sets){
             kcal +=  set.getRep() * gym.getKcal();
         }

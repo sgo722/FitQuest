@@ -1,10 +1,7 @@
 package fitrecommend.fitquest.api;
 
 
-import fitrecommend.fitquest.domain.GymType;
-import fitrecommend.fitquest.domain.Member;
-import fitrecommend.fitquest.domain.Survey;
-import fitrecommend.fitquest.domain.SurveyLocation;
+import fitrecommend.fitquest.domain.*;
 import fitrecommend.fitquest.repository.MemberRepository;
 import fitrecommend.fitquest.repository.SurveyJPARepository;
 import lombok.Data;
@@ -35,10 +32,13 @@ public class SurveyApiController {
         // SurveyResponseDTO에서 필요한 정보를 가져와서 Survey 엔티티에 설정
         Survey survey = new Survey();
         survey.setMember(member);
+        member.setSurvey(survey);
         survey.setCareer(surveyRequestDTO.getCareer());
         survey.setLocation(surveyRequestDTO.getLocation());
-        survey.setGoal(surveyRequestDTO.getGoal());
-        survey.setPrefer(surveyRequestDTO.getPrefer());
+        survey.setGoal1(surveyRequestDTO.getGoal1());
+        survey.setGoal1(surveyRequestDTO.getGoal1());
+        survey.setPrefer1(surveyRequestDTO.getPrefer1());
+        survey.setPrefer2(surveyRequestDTO.getPrefer2());
         survey.setFrequency(surveyRequestDTO.getFrequency());
         survey.setBirth(surveyRequestDTO.getBirth());
         survey.setHeight(surveyRequestDTO.getHeight());
@@ -66,23 +66,32 @@ public class SurveyApiController {
 //    }
 
     @Data
-    public class SurveyRequestDTO {
-
-
+    public static class SurveyRequestDTO {
         private Integer career;
         private SurveyLocation location;
-        private String goal;
-        private GymType prefer;
+        private GymType goal1;
+
+        private GymType goal2;
+
+        private HomeType prefer1;
+
+        private HomeType prefer2;
         private Integer frequency;
         private String birth;
         private Integer height;
         private Integer weight;
 
+        public SurveyRequestDTO(){
+
+        }
+
         public SurveyRequestDTO(Survey survey) {
             this.career = survey.getCareer();
             this.location = survey.getLocation();
-            this.goal = survey.getGoal();
-            this.prefer = survey.getPrefer();
+            this.goal1 = survey.getGoal1();
+            this.goal2 = survey.getGoal2();
+            this.prefer1 = survey.getPrefer1();
+            this.prefer2 = survey.getPrefer2();
             this.frequency = survey.getFrequency();
             this.birth = survey.getBirth();
             this.height = survey.getHeight();
@@ -91,9 +100,13 @@ public class SurveyApiController {
     }
 
     @Data
-    static class SurveyResponseDTO {
+    public static class SurveyResponseDTO {
 
         private String nextpage;
         private Long id; // 회원 아이디
+
+        public SurveyResponseDTO(){
+
+        }
     }
 }

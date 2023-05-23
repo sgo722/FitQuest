@@ -41,11 +41,15 @@ public class GymApiController {
 
 
     @Data
-    public class GymResponseDto{
+    public static class GymResponseDto{
         private Long id;
         private String name;
         private GymType gymType;
         private String url;
+
+        public GymResponseDto(){
+
+        }
     }
 
 }

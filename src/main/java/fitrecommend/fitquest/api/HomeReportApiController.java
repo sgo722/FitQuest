@@ -19,28 +19,6 @@ public class HomeReportApiController {
     private final HomeReportJPARepository homeReportJPARepository;
     private final MemberRepository memberRepository;
 
-    private final ExerciseJPARepository exerciseJPARepository;
-
-//    @GetMapping("/gym/progress/{memberId}") // 헬스 운동 진행여부 리턴.
-//    public ResponseEntity<GymProgressResponseDto> getGymProgress(@PathVariable Long memberId){
-//        Member member = memberRepository.findOne(memberId);
-//        List<GymReport> gymReports = gymReportJPARepository.findByMember(member);
-//        GymProgressResponseDto gymProgressResponseDto = new GymProgressResponseDto();
-//        gymProgressResponseDto.setProgress(Progress.COMPLETE);
-//        if(gymReports == null) {
-//            return ResponseEntity.ok(gymProgressResponseDto);
-//        }
-//        for(GymReport gymreport : gymReports) {
-//            if (gymreport.getProgress() == Progress.READY) {
-//                gymProgressResponseDto.setProgress(Progress.READY);
-//                return ResponseEntity.ok(gymProgressResponseDto);
-//            } else if (gymreport.getProgress() == Progress.INPROGRESS) {
-//                gymProgressResponseDto.setProgress(Progress.INPROGRESS);
-//                return ResponseEntity.ok(gymProgressResponseDto);
-//            }
-//        }
-//        return ResponseEntity.ok(gymProgressResponseDto);
-//    }
 
 
     @GetMapping("/home/progress/{memberId}") // 홈트운동 진행여부에 리턴
@@ -85,12 +63,104 @@ public class HomeReportApiController {
     // READY, report - 운동 전 페이지 이동, 운동보고서 api호출
     // NULL, recommend - 운동 전 페이지 이동, 운동 추천 api호출
 
+    @PostMapping("/home/report/save") // 현재 데이터베이스 있는 그대로 시간만 추가하면된다.
+    public ResponseEntity<HomeReportSaveResponse> homeReportSave(HomeReportSaveRequest homeReportSaveRequest){
+        HomeReportSaveResponse homeReportSaveResponse = new HomeReportSaveResponse();
+        Member member = memberRepository.findOne(homeReportSaveRequest.memberId);
+        List<HomeReport> homeAllReports = homeReportJPARepository.findByMember(member);
+        HomeReport homeReport = homeAllReports.get(homeAllReports.size()-1);
+        homeReport.setStarttime(homeReportSaveRequest.startTime);
+        homeReport.setProgress(Progress.INPROGRESS);
+        homeReportJPARepository.save(homeReport);
+        homeReportSaveResponse.state = "Success";
+        return ResponseEntity.ok(homeReportSaveResponse);
+    }
+
+    @PostMapping("/home/report/complete") // 끝난시간 저장하고 끝?
+    public ResponseEntity<HomeReportCompleteResponse> homeReportComplete(HomeReportCompleteRequest homeReportCompleteRequest){
+        HomeReportCompleteResponse homeReportCompleteResponse = new HomeReportCompleteResponse();
+        Member member = memberRepository.findOne(homeReportCompleteRequest.memberId);
+        List<HomeReport> homeAllReports = homeReportJPARepository.findByMember(member);
+        HomeReport homeReport = homeAllReports.get(homeAllReports.size()-1);
+        homeReport.setEndtime(homeReportCompleteRequest.endTime);
+        homeReport.setProgress(Progress.COMPLETE);
+        homeReportJPARepository.save(homeReport);
+        homeReportCompleteResponse.state = "Success";
+        return ResponseEntity.ok(homeReportCompleteResponse);
+    }
+
+
+    @PostMapping("/home/report/satisfaction")
+    public ResponseEntity<HomeReportSatisfactionResponse> homeReportSaveSatisfaction(HomeReportSatisfactionRequest homeReportSatisfactionRequest){
+        HomeReportSatisfactionResponse homeReportSatisfactionResponse = new HomeReportSatisfactionResponse();
+        Member member = memberRepository.findOne(homeReportSatisfactionRequest.memberId);
+        List<HomeReport> homeAllReports = homeReportJPARepository.findByMember(member);
+        HomeReport homeReport = homeAllReports.get(homeAllReports.size()-1);
+        homeReport.setSatisfaction(homeReportSatisfactionRequest.satifaction);
+        homeReportJPARepository.save(homeReport);
+        homeReportSatisfactionResponse.state = "Success";
+        return ResponseEntity.ok(homeReportSatisfactionResponse);
+    }
+
 
     @Data
     public class HomeProgressResponseDto{
         private Progress progress;
         private String nextApi;
+
+        public HomeProgressResponseDto(){
+
+        }
     }
 
+    @Data
+    public static class HomeReportSaveRequest{
+        private Long memberId;
+        private LocalDateTime startTime;
+
+        public HomeReportSaveRequest(){
+
+        }
+    }
+
+    @Data
+    public static class HomeReportSaveResponse{
+        private String state;
+        public HomeReportSaveResponse(){
+
+        }
+    }
+
+    @Data
+    public static class HomeReportCompleteRequest{
+        private Long memberId;
+        private LocalDateTime endTime;
+        public HomeReportCompleteRequest(){
+
+        }
+    }
+
+    @Data
+    public static class HomeReportCompleteResponse{
+        private String state;
+        public HomeReportCompleteResponse(){
+        }
+    }
+
+    @Data
+    public static class HomeReportSatisfactionRequest{
+        private Long memberId;
+        private Integer satifaction;
+
+        public HomeReportSatisfactionRequest(){
+        }
+    }
+
+    @Data
+    public class HomeReportSatisfactionResponse{
+        private String state;
+        public HomeReportSatisfactionResponse(){
+        }
+    }
 
 }

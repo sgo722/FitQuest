@@ -27,7 +27,7 @@ public class GymReport {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Integer reportKcal;
+    private Long reportKcal;
 
     @Enumerated(EnumType.STRING)
     private Progress progress;
@@ -38,8 +38,12 @@ public class GymReport {
 
     private LocalDateTime endtime;
 
-    public int getTotalKcal(){
-        int kcal = 0;
+    @Enumerated(EnumType.STRING) // ORDINAL로 숫자로 인식해서 +N을하여 데이터를 반환해야하나?
+    private Today today;
+
+
+    public Long getTotalKcal(){
+        Long kcal = 0L;
         for(Exercise exercise : exercises){
             kcal += exercise.getTotalKcal();
         }

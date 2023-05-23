@@ -10,12 +10,11 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
-@Table(name = "homereport")
 public class HomeReport {
 
     @Id
     @GeneratedValue
-    @Column(name = "homereport_id")
+    @Column(name = "homeReport_id")
     private Long id;
 
 
@@ -31,6 +30,8 @@ public class HomeReport {
 
     @Enumerated(EnumType.STRING)
     private Progress progress;
+
+    private Integer satisfaction;
 
     private LocalDateTime created;
 
