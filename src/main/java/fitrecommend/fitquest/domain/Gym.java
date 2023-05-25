@@ -22,7 +22,7 @@ public class Gym {
 
     private String name;
 
-    private String inforamtion;
+    private String information;
 
     @OneToOne(mappedBy = "gym", fetch = LAZY)
     private Exercise exercise;

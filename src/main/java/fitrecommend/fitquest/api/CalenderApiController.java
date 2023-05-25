@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,13 +29,14 @@ public class CalenderApiController {
         Member member = memberRepository.findOne(memberId);
         for(GymReport gymReport : member.getGymReports()){
             GymReportDto gymReportDto = new GymReportDto();
+            gymReportDto.name = gymReport.getName();
             gymReportDto.endTime = gymReport.getEndtime();
             for(Exercise exercise : gymReport.getExercises()){
                 ExerciseDto exerciseDto = new ExerciseDto();
                 exerciseDto.gymName = exercise.getGym().getName();
-                exerciseDto.reps = 0;
+                exerciseDto.totalReps = 0;
                 for(Set set : exercise.getSets()) {
-                    exerciseDto.reps += set.getRep();
+                    exerciseDto.totalReps += set.getRep();
                 }
                 gymReportDto.exerciseDtos.add(exerciseDto);
             }
@@ -43,6 +45,7 @@ public class CalenderApiController {
 
         for(HomeReport homeReport : member.getHomeReports()){
             HomeReportDto homeReportDto = new HomeReportDto();
+            homeReportDto.name = homeReport.getName();
             homeReportDto.endTime = homeReport.getEndtime();
             homeReportDto.url = homeReport.getHome().getUrl();
             viewCalenderResponseDto.homeReports.add(homeReportDto);
@@ -51,24 +54,25 @@ public class CalenderApiController {
     }
 
     public class ViewCalenderResponseDto{
-        private List<GymReportDto> gymReports;
-        private List<HomeReportDto> homeReports;
+        private List<GymReportDto> gymReports = new ArrayList<>();
+        private List<HomeReportDto> homeReports = new ArrayList<>();
     }
 
     public class GymReportDto{
+        private String name;
         private LocalDateTime endTime;
-        private List<ExerciseDto> exerciseDtos; // 운동종류들
+        private List<ExerciseDto> exerciseDtos = new ArrayList<>(); // 운동종류들
     }
 
     public class ExerciseDto{
         private String gymName; // 어떤 운동을 했는지
-        private Integer reps; // 총 수행횟수
+        private Integer totalReps; // 총 수행횟수
     }
 
     public class HomeReportDto{
+        private String name;
         private LocalDateTime endTime;
         private String url;
-
     }
 
 

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,6 +25,8 @@ public class HomeReportApiController {
 
     private final HomeReportJPARepository homeReportJPARepository;
     private final MemberRepository memberRepository;
+
+    private final HomeReportRepository homeReportRepository;
 
     private final HomeJPARepository homeJPARepository;
 
@@ -75,11 +78,26 @@ public class HomeReportApiController {
     public ResponseEntity<HomeRecommendResponseDto> homeRecommend(@PathVariable Long memberId)throws JsonProcessingException {
         HomeRecommendResponseDto homeRecommendResponseDto = new HomeRecommendResponseDto();
         Member member = memberRepository.findOne(memberId);
+        // HomeReport의 Home의 HomeType이 같은 것을 조회하고
+        List<HomeReport> homeReports1 = homeReportRepository.findByHomeType(member.getSurvey().getPrefer1()); // 이번에 어떤 운동을 할건데
+        List<HomeReport> homeReports2 = homeReportRepository.findByHomeType(member.getSurvey().getPrefer1()); // 이번에 어떤 운동을 할건데
+
+        HomeReport homeReport1 = homeReports1.get(homeReports1.size()-1);
+        HomeReport homeReport2 = homeReports2.get(homeReports2.size()-1);
 
         FlaskRecommendRequestDto requestDto = new FlaskRecommendRequestDto();
         requestDto.setMemberId(memberId);
-        requestDto.setPrefer1(member.getSurvey().getPrefer1());
-        requestDto.setPrefer2(member.getSurvey().getPrefer2());
+        HomePreferDto homePreferDto1 = new HomePreferDto();
+        homePreferDto1.setHomeType(homeReport1.getHome().getType());
+        homePreferDto1.setVideoName(homeReport1.getHome().getVideoName());
+        homePreferDto1.setSatisafction(homeReport1.getSatisfaction());
+        requestDto.homePreferDtos.add(homePreferDto1);
+
+        HomePreferDto homePreferDto2 = new HomePreferDto();
+        homePreferDto2.setHomeType(homeReport2.getHome().getType());
+        homePreferDto2.setVideoName(homeReport2.getHome().getVideoName());
+        homePreferDto2.setSatisafction(homeReport2.getSatisfaction());
+        requestDto.homePreferDtos.add(homePreferDto2);
 
         // JSON 변환
         ObjectMapper objectMapper = new ObjectMapper();
@@ -146,6 +164,7 @@ public class HomeReportApiController {
         Member member = memberRepository.findOne(homeReportSatisfactionRequest.memberId);
         List<HomeReport> homeAllReports = homeReportJPARepository.findByMember(member);
         HomeReport homeReport = homeAllReports.get(homeAllReports.size()-1);
+        homeReport.setName(homeReportSatisfactionRequest.ReportName);
         homeReport.setSatisfaction(homeReportSatisfactionRequest.satifaction);
         homeReportJPARepository.save(homeReport);
         homeReportSatisfactionResponse.state = "Success";
@@ -173,8 +192,14 @@ public class HomeReportApiController {
     @Data
     public static class FlaskRecommendRequestDto{
         private Long memberId;
-        private HomeType prefer1;
-        private HomeType prefer2;
+        private List<HomePreferDto> homePreferDtos;
+    }
+
+    @Data
+    public static class HomePreferDto{
+        private HomeType homeType;
+        private String videoName;
+        private Integer satisafction;
     }
 
 
@@ -222,6 +247,7 @@ public class HomeReportApiController {
     @Data
     public static class HomeReportSatisfactionRequest{
         private Long memberId;
+        private String ReportName;
         private Integer satifaction;
 
         public HomeReportSatisfactionRequest(){
@@ -236,11 +262,6 @@ public class HomeReportApiController {
     }
 
     //
-
-    @Data
-    public static class HomeRecommendResponseDtos{
-        private List<HomeRecommendResponseDto> homeRecommendResponseDtos;
-    }
 
 
 

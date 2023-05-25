@@ -20,6 +20,8 @@ public class GymReport {
     @Column(name = "gymReport_id")
     private Long id;
 
+    private String name;
+
     @OneToMany(mappedBy = "gymReport",  cascade = CascadeType.ALL)
     private List<Exercise> exercises = new ArrayList<>();
 

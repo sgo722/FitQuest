@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,8 @@ public class GymReportApiController {
     private final GymReportJPARepository gymReportJPARepository;
 
     private final GymJPARepository gymJPARepository;
+
+    private final GymRepository gymRepository;
     private final MemberRepository memberRepository;
 
     private final GymReportRepository gymReportRepository;
@@ -157,7 +160,7 @@ public class GymReportApiController {
         gymreport.setMember(member);
         member.getGymReports().add(gymreport);
         for(Long gymId : responseEntity.getBody().getGymId()){ // AI로부터 운동을 받아와서 저장한다.
-            Gym gym = gymJPARepository.findOne(memberId);
+            Gym gym = gymRepository.findOne(gymId); // 헬스장 운동을 찾을건데, 그게 회원아이디를 통해서 찾는다?
             Exercise exercise = new Exercise();
             exercise.setGym(gym);
             exercise.setGymReport(gymreport);
@@ -218,7 +221,7 @@ public class GymReportApiController {
             gymReportResponseDto.setGymId(exercise.getGym().getId());
             gymReportResponseDto.setGymName(exercise.getGym().getName());
             gymReportResponseDto.setGymType(exercise.getGym().getUrl());
-            gymReportResponseDto.setGymInformation(exercise.getGym().getInforamtion());
+            gymReportResponseDto.setGymInformation(exercise.getGym().getInformation());
             gymReportResponseDtos.gyms.add(gymReportResponseDto);
         }
         return ResponseEntity.ok(gymReportResponseDtos);
@@ -236,7 +239,7 @@ public class GymReportApiController {
             gymKcalDto.setGymId(exercise.getGym().getId());
             gymReportCompleteResponseDto.getGymKcalDtos().add(gymKcalDto);
         }
-        gymReport.setEndtime(gymReportCompleteRequestDto.endTime);
+        gymReport.setStarttime(gymReportCompleteRequestDto.startTime);
         gymReport.setReportKcal(gymReport.getReportKcal());
         gymReportCompleteResponseDto.totalGymKcal = gymReport.getReportKcal();
         gymReport.setProgress(Progress.COMPLETE);
@@ -277,7 +280,7 @@ public class GymReportApiController {
 
     @Data
     public static class GymRecommendResponseDtos{
-        private List<GymRecommendResponseDto> gymRecommendResponseDtos;
+        private List<GymRecommendResponseDto> gymRecommendResponseDtos = new ArrayList<>();
     }
 
     @Data
@@ -293,7 +296,7 @@ public class GymReportApiController {
         private Today today;
         private GymType goal1;
         private GymType goal2;
-        private List<RecentExerciseDto> RecentExerciseDtos;
+        private List<RecentExerciseDto> RecentExerciseDtos = new ArrayList<>();
 
     }
 
@@ -320,14 +323,14 @@ public class GymReportApiController {
 
     @Data
     public static class GymReportResponseDtos {
-        private List<GymReportResponseDto> gyms;
+        private List<GymReportResponseDto> gyms = new ArrayList<>();
     }
 
 
     @Data
     public static class GymReportCompleteRequestDto{
         private Long memberId;
-        private LocalDateTime endTime;
+        private LocalDateTime startTime;
 
         public GymReportCompleteRequestDto(){
 
@@ -336,7 +339,7 @@ public class GymReportApiController {
     @Data
     public static class GymReportCompleteResponseDto{
         private Long totalGymKcal;
-        private List<GymKcalDto> gymKcalDtos;
+        private List<GymKcalDto> gymKcalDtos = new ArrayList<>();
         public GymReportCompleteResponseDto(){
         }
 

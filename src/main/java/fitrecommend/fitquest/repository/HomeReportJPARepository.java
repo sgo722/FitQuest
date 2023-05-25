@@ -10,4 +10,6 @@ public interface HomeReportJPARepository extends JpaRepository<HomeReport, Long>
 
 
     public List<HomeReport> findByMember(Member member);
+
+
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,7 @@ public class ExerciseApiController {
     private final SetJPARepository setJPARepository;
 
     private final GymJPARepository gymJPARepository;
+
 
 
     @PostMapping("/gym/exercise/complete")
@@ -54,6 +56,7 @@ public class ExerciseApiController {
         GymReportSatisfactionResponse gymReportSatisfactionResponse = new GymReportSatisfactionResponse();
         List<GymReport> gymAllReports = gymReportJPARepository.findByMember(member); // 회원이 가지고있는 모든 보고서를 조회한다.
         GymReport gymReport = gymAllReports.get(gymAllReports.size()-1);
+        gymReport.setName(gymReportSatisfactionRequest.ReportName);
         for(SatisfactionDto satisfactionDto: gymReportSatisfactionRequest.getSatisfactionDtos()){
             Exercise exercise = exerciseJPARepository.findByGymReportAndGymId(gymReport, satisfactionDto.gymId);
             exercise.setSatisfaction(satisfactionDto.satisfaction);
@@ -67,7 +70,7 @@ public class ExerciseApiController {
     public static class ExerciseCompleteRequestDto{
         private Long memberId;
         private Long gymId;
-        private List<Integer> leps;
+        private List<Integer> leps = new ArrayList<>();
 
         public ExerciseCompleteRequestDto(){
 
@@ -84,7 +87,8 @@ public class ExerciseApiController {
     @Data
     public static class GymReportSatisfactionRequest{
         private Long memberId;
-        private List<SatisfactionDto> satisfactionDtos;
+        private String ReportName;
+        private List<SatisfactionDto> satisfactionDtos = new ArrayList<>();
         public GymReportSatisfactionRequest(){
 
         }

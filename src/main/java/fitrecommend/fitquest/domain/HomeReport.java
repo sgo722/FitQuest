@@ -17,6 +17,7 @@ public class HomeReport {
     @Column(name = "homeReport_id")
     private Long id;
 
+    private String name;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
