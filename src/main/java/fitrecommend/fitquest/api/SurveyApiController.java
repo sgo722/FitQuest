@@ -48,7 +48,7 @@ public class SurveyApiController {
         surveyJPARepository.save(survey);
         surveyResponseDTO.setId(survey.getMember().getId());
 
-        if(survey.getLocation() == SurveyLocation.valueOf("GYM")) {
+        if(survey.getLocation() == SurveyLocation.GYM) {
             surveyResponseDTO.setNextpage("gym");
         }else{
             surveyResponseDTO.setNextpage("home");

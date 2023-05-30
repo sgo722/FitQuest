@@ -38,7 +38,6 @@ public class MemberApiController {
             member.setEmail(email);
             member.setBirth(birth);
             member.setToday(Today.CHEST);
-            memberRepository.save(member);
 
             Long memberId = memberService.join(member);
 
